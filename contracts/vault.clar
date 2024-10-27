@@ -13,7 +13,7 @@
 (define-fungible-token pixel-token)
 
 ;; NFT for in-game assets
-(define-non-fungible-token game-asset principal)
+(define-non-fungible-token game-asset { id: uint })
 
 ;; Data structures
 (define-map asset-details
@@ -45,7 +45,7 @@
     (let ((asset-owner tx-sender))
         (begin
             (asserts! (is-eq tx-sender (var-get contract-owner)) ERR-NOT-AUTHORIZED)
-            (try! (nft-mint? game-asset asset-id asset-owner))
+            (try! (nft-mint? game-asset { id: asset-id } asset-owner))
             (map-set asset-details
                 { asset-id: asset-id }
                 {
@@ -92,7 +92,7 @@
     (let ((asset-info (unwrap! (map-get? asset-details { asset-id: asset-id }) ERR-ASSET-NOT-FOUND)))
         (begin
             (asserts! (is-eq (get owner asset-info) tx-sender) ERR-NOT-AUTHORIZED)
-            (try! (nft-transfer? game-asset asset-id tx-sender recipient))
+            (try! (nft-transfer? game-asset { id: asset-id } tx-sender recipient))
             (map-set asset-details
                 { asset-id: asset-id }
                 (merge asset-info { owner: recipient })
